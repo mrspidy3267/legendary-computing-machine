@@ -91,7 +91,11 @@ def run_automation():
         
         # Take a screenshot of successful loading
         print("Taking screenshots")
-        driver.save_screenshot("page.png")
+        for i in range(1,6):
+               driver.save_screenshot(f"page{i}.png")
+               body = driver.find_element(By.TAG_NAME, 'body')  # You can change this to any specific element
+               body.send_keys(Keys.ARROW_RIGHT)  
+               
         
         print("Automation completed successfully!")
         
