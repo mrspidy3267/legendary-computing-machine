@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4  # Updated to v4
     
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5  # Updated to v5
       with:
         python-version: '3.x'
     
@@ -40,9 +40,12 @@ jobs:
         python main.py
       
     - name: Upload screenshots
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4  # Updated to v4
       if: always()
       with:
         name: screenshots
         path: |
           *.png
+        retention-days: 90  # Added retention period
+        compression-level: 6  # Added compression for better performance
+        overwrite: true  # Added overwrite option for consistent artifact names
