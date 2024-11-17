@@ -23,18 +23,18 @@ def run_gitlab_automation():
         # Verify display setup
         check_display()
         
-        # Initialize the driver with undetected-chromedriver and additional options
-        options = {
-            "uc": True,
-            "headless": True,
-            "disable-gpu": True,
-            "no-sandbox": True,
-            "disable-dev-shm-usage": True
-        }
-        
         print("Initializing webdriver...")
-        driver = Driver(**options)
+        # Initialize driver with correct SeleniumBase options
+        driver = Driver(
+            uc=True,  # Use undetected-chromedriver
+            headless=True,
+            undetected=True,  # Enhance undetected mode
+            agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
         print("Webdriver initialized successfully")
+        
+        # Set window size for consistent behavior
+        driver.set_window_size(1920, 1080)
         
         url = "https://gitlab.com/users/sign_in"
         print(f"Attempting to navigate to {url}")
