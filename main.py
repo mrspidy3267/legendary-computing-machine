@@ -46,7 +46,7 @@ def handle_captcha(driver):
         print(f"Captcha handling note: {str(e)}")
         return False
 
-def run_gitlab_automation():
+def run_automation():
     """
     Automate GitLab login process using SeleniumBase with undetected-chromedriver
     """
@@ -68,7 +68,7 @@ def run_gitlab_automation():
         # Set window size for consistent behavior
         driver.set_window_size(1920, 1080)
         
-        url = "https://gitlab.com/users/sign_in"
+        url = "https://missav.com/dm561/en/uncensored-leak"
         print(f"Attempting to navigate to {url}")
         
         # Open URL with reconnect attempts
@@ -78,7 +78,7 @@ def run_gitlab_automation():
                 print(f"Connection attempt {attempt + 1} of {max_attempts}")
                 driver.get(url)  # Using standard get instead of uc_open_with_reconnect
                 time.sleep(5)  # Wait for page to load completely
-                print("Successfully connected to GitLab")
+                print("Successfully connected")
                 break
             except WebDriverException as e:
                 if attempt == max_attempts - 1:
@@ -87,25 +87,13 @@ def run_gitlab_automation():
                 print(f"Attempt {attempt + 1} failed. Retrying...")
                 time.sleep(2)
 
-        # Handle captcha using Selenium methods
-        handle_captcha(driver)
-
-        # Wait for login form elements
-        print("Waiting for login form elements...")
-        wait = WebDriverWait(driver, 10)
-        username_field = wait.until(
-            EC.presence_of_element_located((By.ID, "user_login"))
-        )
-        password_field = wait.until(
-            EC.presence_of_element_located((By.ID, "user_password"))
-        )
-        print("Login form elements found")
-
-        # Take a screenshot of successful loading
-        print("Taking screenshot of login page...")
-        driver.save_screenshot("gitlab_login_page.png")
         
-        print("GitLab automation completed successfully!")
+        
+        # Take a screenshot of successful loading
+        print("Taking screenshots")
+        driver.save_screenshot("page.png")
+        
+        print("Automation completed successfully!")
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")
@@ -125,4 +113,4 @@ def run_gitlab_automation():
 
 if __name__ == "__main__":
     print("Starting GitLab automation script...")
-    run_gitlab_automation()
+    run_automation()
