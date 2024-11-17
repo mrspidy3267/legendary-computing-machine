@@ -14,6 +14,38 @@ def check_display():
     display = os.environ['DISPLAY']
     print(f"Using display: {display}")
 
+def handle_captcha(driver):
+    """Handle captcha using Selenium methods instead of PyAutoGUI"""
+    try:
+        print("Checking for captcha...")
+        
+        # Wait for and find the iframe if it exists
+        iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        for iframe in iframes:
+            if "recaptcha" in iframe.get_attribute("src").lower():
+                print("Found reCAPTCHA iframe")
+                driver.switch_to.frame(iframe)
+                
+                # Wait for and click the checkbox
+                wait = WebDriverWait(driver, 10)
+                checkbox = wait.until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".recaptcha-checkbox-border"))
+                )
+                checkbox.click()
+                print("Clicked reCAPTCHA checkbox")
+                
+                # Switch back to default content
+                driver.switch_to.default_content()
+                return True
+                
+        # No captcha found
+        print("No captcha detected")
+        return False
+        
+    except Exception as e:
+        print(f"Captcha handling note: {str(e)}")
+        return False
+
 def run_gitlab_automation():
     """
     Automate GitLab login process using SeleniumBase with undetected-chromedriver
@@ -27,8 +59,8 @@ def run_gitlab_automation():
         # Initialize driver with correct SeleniumBase options
         driver = Driver(
             uc=True,  # Use undetected-chromedriver
-            headless=True,
             undetected=True,  # Enhance undetected mode
+            headless=False,  # Set to false to avoid PyAutoGUI issues
             agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         print("Webdriver initialized successfully")
@@ -44,7 +76,8 @@ def run_gitlab_automation():
         for attempt in range(max_attempts):
             try:
                 print(f"Connection attempt {attempt + 1} of {max_attempts}")
-                driver.uc_open_with_reconnect(url, 4)
+                driver.get(url)  # Using standard get instead of uc_open_with_reconnect
+                time.sleep(5)  # Wait for page to load completely
                 print("Successfully connected to GitLab")
                 break
             except WebDriverException as e:
@@ -54,15 +87,8 @@ def run_gitlab_automation():
                 print(f"Attempt {attempt + 1} failed. Retrying...")
                 time.sleep(2)
 
-        # Handle captcha if present
-        try:
-            print("Checking for captcha...")
-            driver.uc_gui_click_captcha()
-            print("Captcha handled successfully")
-        except Exception as e:
-            print(f"Captcha handling error: {str(e)}")
-            driver.save_screenshot("captcha_error.png")
-            raise e
+        # Handle captcha using Selenium methods
+        handle_captcha(driver)
 
         # Wait for login form elements
         print("Waiting for login form elements...")
