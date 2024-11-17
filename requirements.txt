@@ -2,3 +2,4 @@
 seleniumbase>=4.0.0
 undetected-chromedriver>=3.5.0
 selenium>=4.0.0
+xvfbwrapper>=0.2.9
