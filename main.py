@@ -3,6 +3,7 @@ from seleniumbase import Driver
 import time
 import os
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys  # Import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
@@ -48,7 +49,7 @@ def handle_captcha(driver):
 
 def run_automation():
     """
-    Automate GitLab login process using SeleniumBase with undetected-chromedriver
+    Automate process using SeleniumBase with undetected-chromedriver
     """
     driver = None
     try:
@@ -87,15 +88,16 @@ def run_automation():
                 print(f"Attempt {attempt + 1} failed. Retrying...")
                 time.sleep(2)
 
-        
-        
+        # Handle CAPTCHA if present
+        if handle_captcha(driver):
+            print("Captcha handled successfully")
+
         # Take a screenshot of successful loading
         print("Taking screenshots")
-        for i in range(1,6):
-               driver.save_screenshot(f"page{i}.png")
-               body = driver.find_element(By.TAG_NAME, 'body')  # You can change this to any specific element
-               body.send_keys(Keys.ARROW_RIGHT)  
-               
+        for i in range(1, 6):
+            driver.save_screenshot(f"page{i}.png")
+            body = driver.find_element(By.TAG_NAME, 'body')  # You can change this to any specific element
+            body.send_keys(Keys.ARROW_RIGHT)  # Simulate right arrow key press
         
         print("Automation completed successfully!")
         
@@ -116,5 +118,5 @@ def run_automation():
             print("Webdriver cleaned up successfully")
 
 if __name__ == "__main__":
-    print("Starting GitLab automation script...")
+    print("Starting Automation script...")
     run_automation()
