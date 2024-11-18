@@ -1,0 +1,74 @@
+# .github/workflows/seleniumbase-gitlab.yml
+name: SeleniumBase Automation
+
+on:
+  schedule:
+    - cron: '0 */120 * * *'  # Runs every 6 hours
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4 x11-utils
+        wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+        google-chrome --version
+        rm google-chrome-stable_current_amd64.deb
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Start Xvfb
+      run: |
+        # Start Xvfb and store its PID
+        Xvfb :99 -screen 0 1920x1080x24 &
+        echo $! > xvfb.pid
+        export DISPLAY=:99
+        
+        # Wait for Xvfb to start and verify
+        sleep 3
+        xdpyinfo -display :99 >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+          echo "Xvfb started successfully"
+        else
+          echo "Failed to start Xvfb"
+          exit 1
+        fi
+
+    - name: Run automation
+      env:
+        DISPLAY: :99
+      run: python main.py
+      
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: screenshots
+        path: |
+          *.png
+        retention-days: 90
+        compression-level: 6
+        overwrite: true
+
+    - name: Cleanup Xvfb
+      if: always()
+      run: |
+        if [ -f xvfb.pid ]; then
+          kill $(cat xvfb.pid)
+          rm xvfb.pid
+        fi
