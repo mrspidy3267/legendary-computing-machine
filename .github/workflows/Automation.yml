@@ -1,4 +1,4 @@
-# .github/workflows/seleniumbase-gitlab.yml
+# .github/workflows/seleniumbase.yml
 name: SeleniumBase Automation
 
 on:
